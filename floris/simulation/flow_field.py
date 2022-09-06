@@ -34,6 +34,7 @@ class FlowField(FromDictMixin):
     wind_shear: float = field(converter=float)
     air_density: float = field(converter=float)
     turbulence_intensity: float = field(converter=float)
+    wake_expansion: NDArrayFloat = field(converter=floris_array_converter)
     reference_wind_height: float = field(converter=float)
 
     n_wind_speeds: int = field(init=False)

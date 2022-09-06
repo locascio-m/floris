@@ -22,6 +22,11 @@ from floris.simulation import FlowField
 from floris.simulation import Grid
 from floris.simulation import Turbine
 from floris.utilities import cosd, sind, tand
+from floris.type_dec import (
+    FromDictMixin,
+    NDArrayFloat,
+    floris_array_converter
+)
 
 
 @define
@@ -44,7 +49,8 @@ class GaussVelocityDeficit(BaseModel):
             y=grid.y_sorted,
             z=grid.z_sorted,
             u_initial=flow_field.u_initial_sorted,
-            wind_veer=flow_field.wind_veer
+            wind_veer=flow_field.wind_veer,
+            ki=flow_field.wake_expansion,
         )
         return kwargs
 
@@ -61,6 +67,7 @@ class GaussVelocityDeficit(BaseModel):
         ct_i: np.ndarray,
         hub_height_i: float,
         rotor_diameter_i: np.ndarray,
+        i: int,
         # enforces the use of the below as keyword arguments and adherence to the
         # unpacking of the results from prepare_function()
         *,
@@ -68,7 +75,8 @@ class GaussVelocityDeficit(BaseModel):
         y: np.ndarray,
         z: np.ndarray,
         u_initial: np.ndarray,
-        wind_veer: float
+        wind_veer: float,
+        ki: np.ndarray
     ) -> None:
 
         # yaw_angle is all turbine yaw angles for each wind speed
@@ -148,8 +156,10 @@ class GaussVelocityDeficit(BaseModel):
         if np.sum(far_wake_mask):
 
             # Wake expansion in the lateral (y) and the vertical (z)
-            ky = self.ka * turbulence_intensity_i + self.kb  # wake expansion parameters
-            kz = self.ka * turbulence_intensity_i + self.kb  # wake expansion parameters
+            ky = ki[i] * np.ones_like(turbulence_intensity_i)
+            kz = ki[i] * np.ones_like(turbulence_intensity_i)
+            # ky = self.ka * turbulence_intensity_i + self.kb  # wake expansion parameters
+            # kz = self.ka * turbulence_intensity_i + self.kb  # wake expansion parameters
             sigma_y = (ky * (x - x0) + sigma_y0) * far_wake_mask + sigma_y0 * np.array(x < x0)
             sigma_z = (kz * (x - x0) + sigma_z0) * far_wake_mask + sigma_z0 * np.array(x < x0)
 

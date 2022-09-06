@@ -74,6 +74,7 @@ class WakeModelManager(BaseClass):
     enable_secondary_steering: bool = field(converter=bool)
     enable_yaw_added_recovery: bool = field(converter=bool)
     enable_transverse_velocities: bool = field(converter=bool)
+    enable_local_deficit_scaling: bool = field(converter=bool)
 
     wake_deflection_parameters: dict = field(converter=dict)
     wake_turbulence_parameters: dict = field(converter=dict)

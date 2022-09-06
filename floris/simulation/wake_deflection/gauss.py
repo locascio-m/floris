@@ -21,6 +21,11 @@ from floris.simulation import FlowField
 from floris.simulation import Grid
 from floris.simulation import Turbine
 from floris.utilities import cosd, sind, tand
+from floris.type_dec import (
+    FromDictMixin,
+    NDArrayFloat,
+    floris_array_converter
+)
 
 
 @define
@@ -93,6 +98,7 @@ class GaussVelocityDeflection(BaseModel):
             z=grid.z_sorted,
             freestream_velocity=flow_field.u_initial_sorted,
             wind_veer=flow_field.wind_veer,
+            ki=flow_field.wake_expansion
         )
         return kwargs
 
@@ -105,12 +111,14 @@ class GaussVelocityDeflection(BaseModel):
         turbulence_intensity_i: np.ndarray,
         ct_i: np.ndarray,
         rotor_diameter_i: float,
+        i: int,
         *,
         x: np.ndarray,
         y: np.ndarray,
         z: np.ndarray,
         freestream_velocity: np.ndarray,
         wind_veer: float,
+        ki: np.ndarray,
     ):
         """
         Calculates the deflection field of the wake. See
@@ -164,8 +172,10 @@ class GaussVelocityDeflection(BaseModel):
         )
 
         # wake expansion parameters
-        ky = self.ka * turbulence_intensity_i + self.kb
-        kz = self.ka * turbulence_intensity_i + self.kb
+        ky = ki[i] * np.ones_like(turbulence_intensity_i)
+        kz = ki[i] * np.ones_like(turbulence_intensity_i)
+        # ky = self.ka * turbulence_intensity_i + self.kb
+        # kz = self.ka * turbulence_intensity_i + self.kb
 
         C0 = 1 - u0 / freestream_velocity
         M0 = C0 * (2 - C0)

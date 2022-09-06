@@ -127,6 +127,7 @@ def sequential_solver(farm: Farm, flow_field: FlowField, grid: TurbineGrid, mode
             turbulence_intensity_i,
             ct_i,
             rotor_diameter_i,
+            i,
             **deflection_model_args
         )
 
@@ -169,13 +170,20 @@ def sequential_solver(farm: Farm, flow_field: FlowField, grid: TurbineGrid, mode
             ct_i,
             hub_height_i,
             rotor_diameter_i,
+            i,
             **deficit_model_args
         )
 
-        wake_field = model_manager.combination_model.function(
-            wake_field,
-            velocity_deficit * flow_field.u_initial_sorted
-        )
+        if model_manager.enable_local_deficit_scaling:
+            wake_field = model_manager.combination_model.function(
+                wake_field,
+                velocity_deficit * flow_field.u_sorted
+            )
+        else:
+            wake_field = model_manager.combination_model.function(
+                wake_field,
+                velocity_deficit * flow_field.u_initial_sorted
+            )
 
         wake_added_turbulence_intensity = model_manager.turbulence_model.function(
             ambient_turbulence_intensity,
@@ -314,6 +322,7 @@ def full_flow_sequential_solver(farm: Farm, flow_field: FlowField, flow_field_gr
             turbulence_intensity_i,
             ct_i,
             rotor_diameter_i,
+            i,
             **deflection_model_args
         )
 
@@ -344,6 +353,7 @@ def full_flow_sequential_solver(farm: Farm, flow_field: FlowField, flow_field_gr
             ct_i,
             hub_height_i,
             rotor_diameter_i,
+            i,
             **deficit_model_args
         )
 

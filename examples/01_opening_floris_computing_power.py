@@ -23,7 +23,7 @@ This example creates a FLORIS instance
 1) Makes a two-turbine layout
 2) Demonstrates single ws/wd simulations
 3) Demonstrates mulitple ws/wd simulations
-TEST
+
 Main concept is introduce FLORIS and illustrate essential structure of most-used FLORIS calls
 """
 
